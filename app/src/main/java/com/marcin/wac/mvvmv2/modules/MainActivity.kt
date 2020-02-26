@@ -1,8 +1,9 @@
 package com.marcin.wac.mvvmv2.modules
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.marcin.wac.mvvmv2.R
@@ -18,18 +19,20 @@ class MainActivity : AppCompatActivity() {
         (application as DaggApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initializeUi()
+        initialization()
     }
 
-    private fun initializeUi(){
-        val viewModel = ViewModelProviders.of(this, factory)
-            .get(MainViewModel::class.java)
-        viewModel.init()
-        viewModel.getNewRepository()!!.observe(this, Observer {
-                jokeResponse: JokeResponse ->
-            Toast.makeText(this, jokeResponse.value.joke, Toast.LENGTH_SHORT).show()
-        })
+    private fun initialization() {
+        val viewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
 
+        viewModel.getJokeResponseLiveData()!!.observe(this, Observer {
+                jokeResponse: JokeResponse? ->
+            if (jokeResponse != null) {
+                Toast.makeText(this, jokeResponse.value[0].joke, Toast.LENGTH_LONG).show()
+            } else
+                Toast.makeText(this, "null", Toast.LENGTH_LONG).show()
+
+        })
     }
 
 
